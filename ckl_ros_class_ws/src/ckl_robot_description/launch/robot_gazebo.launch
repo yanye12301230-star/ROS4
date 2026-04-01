@@ -1,0 +1,29 @@
+<launch>
+    <!-- 1. 加载 URDF 模型 -->
+    <param name="robot_description" textfile="$(find ckl_robot_description)/urdf/simple_robot.urdf"/>
+
+    <!-- 2. 启动 Gazebo 空世界 -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="debug" value="false"/>
+        <arg name="gui" value="true"/>
+    </include>
+
+    <!-- 3. Spawn 小车到仿真环境 -->
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
+          args="-urdf -model my_robot -param robot_description" output="screen"/>
+
+    <!-- 4. 启动关节状态发布器 -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- 5. 加载控制器配置 -->
+    <rosparam file="$(find ckl_robot_description)/config/robot_control.yaml" command="load"/>
+
+    <!-- 6. 启动控制器管理器 -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+          args="joint_state_controller diff_drive_controller"/>
+
+    <!-- 7. 启动键盘控制节点 (后台运行，稍等2秒让Gazebo就绪) -->
+    <node name="teleop" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen"
+          launch-prefix="bash -c 'sleep 2; $0 $@'"/>
+</launch>

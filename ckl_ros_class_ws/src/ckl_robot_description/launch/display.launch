@@ -1,0 +1,11 @@
+<launch>
+  <!-- 1. 加载 xacro 模型 -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find ckl_robot_description)/urdf/simple_robot.xacro"/>
+
+  <!-- 2. 发布关节状态和 TF 树（必须有！） -->
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  <!-- 3. 启动 RViz，自动加载保存好的配置 -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ckl_robot_description)/config/robot.rviz"/>
+</launch>

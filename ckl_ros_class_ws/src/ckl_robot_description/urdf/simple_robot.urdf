@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<robot name="simple_robot" xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <!-- ===================== 1. 基础底盘 Link ===================== -->
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.4 0.2 0.1"/>
+            </geometry>
+            <material name="blue">
+                <color rgba="0 0 1 1"/>
+            </material>
+        </visual>
+        
+        <collision>
+            <geometry>
+                <box size="0.4 0.2 0.1"/>
+            </geometry>
+        </collision>
+        
+        <inertial>
+            <mass value="1.0"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
+    </link>
+
+    <!-- ===================== 2. 左轮 Link & 关节 ===================== -->
+    <link name="wheel_left_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/> 
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.1"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <joint name="wheel_left_joint" type="revolute">
+        <origin xyz="-0.15 -0.1 -0.05" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="wheel_left_link"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="3.0" velocity="1.0" lower="-3.1416" upper="3.1416"/>
+    </joint>
+
+    <!-- ===================== 3. 右轮 Link & 关节 ===================== -->
+    <link name="wheel_right_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.1"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <joint name="wheel_right_joint" type="revolute">
+        <origin xyz="-0.15 0.1 -0.05" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="wheel_right_link"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="3.0" velocity="1.0" lower="-3.1416" upper="3.1416"/>
+    </joint>
+
+    <!-- ===================== 4. 万向轮 Link & 关节 ===================== -->
+    <link name="caster_link">
+        <visual>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+            <material name="gray">
+                <color rgba="0.5 0.5 0.5 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.05"/>
+            <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+        </inertial>
+    </link>
+
+    <joint name="caster_joint" type="fixed">
+        <origin xyz="0.15 0 -0.05" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="caster_link"/>
+    </joint>
+ <!-- ===================== 电机传动配置 ===================== -->
+<transmission name="left_wheel_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="wheel_left_joint"/>
+  <actuator name="left_wheel_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<transmission name="right_wheel_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="wheel_right_joint"/>
+  <actuator name="right_wheel_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<!-- ===================== Gazebo 物理仿真配置 ===================== -->
+<!-- 底盘：允许重力，允许碰撞 -->
+<gazebo reference="base_link">
+    <material>Gazebo/Blue</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>false</selfCollide>
+</gazebo>
+
+<!-- 左轮：添加橡胶材质，产生摩擦 -->
+<gazebo reference="wheel_left_link">
+    <material>Gazebo/Black</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>false</selfCollide>
+    <mu1>10.0</mu1>
+    <mu2>10.0</mu2>
+</gazebo>
+
+<!-- 右轮：添加橡胶材质 -->
+<gazebo reference="wheel_right_link">
+    <material>Gazebo/Black</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>false</selfCollide>
+    <mu1>10.0</mu1>
+    <mu2>10.0</mu2>
+</gazebo>
+
+<!-- 万向轮：添加摩擦属性 -->
+<gazebo reference="caster_link">
+    <material>Gazebo/Gray</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>false</selfCollide>
+    <mu1>5.0</mu1>
+    <mu2>5.0</mu2>
+</gazebo>
+<!-- ===================== Gazebo 差速驱动插件（让小车动起来） ===================== -->
+<gazebo>
+  <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+    <alwaysOn>true</alwaysOn>
+    <updateRate>50</updateRate>
+    <leftJoint>wheel_left_joint</leftJoint>
+    <rightJoint>wheel_right_joint</rightJoint>
+    <wheelSeparation>0.2</wheelSeparation>
+    <wheelDiameter>0.1</wheelDiameter>
+    <torque>20</torque>
+    <commandTopic>cmd_vel</commandTopic>
+    <odometryTopic>odom</odometryTopic>
+    <odometryFrame>odom</odometryFrame>
+    <robotBaseFrame>base_link</robotBaseFrame>
+  </plugin>
+</gazebo>
+<gazebo>
+  <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+    <alwaysOn>true</alwaysOn>
+    <updateRate>50</updateRate>
+    <leftJoint>wheel_left_joint</leftJoint>
+    <rightJoint>wheel_right_joint</rightJoint>
+    <wheelSeparation>0.2</wheelSeparation>
+    <wheelDiameter>0.1</wheelDiameter>
+    <torque>10</torque>
+    <commandTopic>cmd_vel</commandTopic>
+    <odometryTopic>odom</odometryTopic>
+    <odometryFrame>odom</odometryFrame>
+    <robotBaseFrame>base_link</robotBaseFrame>
+  </plugin>
+</gazebo>
+</robot>

@@ -1,0 +1,2 @@
+ckl_robot_description:my_class_pkg
+-DCATKIN_DEVEL_PREFIX=/home/bcsh/ckl_ros_class_ws/devel -DCMAKE_INSTALL_PREFIX=/home/bcsh/ckl_ros_class_ws/install -G Unix Makefiles
