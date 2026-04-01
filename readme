@@ -1,0 +1,24 @@
+小车加键盘控制
+终端 1（核心）
+roscore
+
+终端 2（启动 Gazebo + 小车）
+source ~/ckl_ros_class_ws/devel/setup.bash
+roslaunch ckl_robot_description robot_gazebo.launch
+
+
+终端 3（键盘控制）
+source ~/ckl_ros_class_ws/devel/setup.bash
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+
+
+
+现在启动 display.launch 就能看到模型
+bash
+运行
+roslaunch ckl_robot_description display.launch
+打开 RViz 就能看到：
+蓝色底盘
+左右黑轮
+灰色万向轮
+顶部红色圆柱激光雷达（固定不动）
